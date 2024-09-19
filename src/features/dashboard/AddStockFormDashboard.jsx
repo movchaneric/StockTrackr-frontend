@@ -23,6 +23,17 @@ import Heading from "../../components/Heading";
 import { SERVER_IP_ADDRESS } from "../../utils/constVariables";
 import { useLastPurchaseDate } from "./hooks/useLastPurhchaseDate";
 
+/**
+ * AddStockFormDashboard component allows the user to buy or update stock information
+ * by submitting a form with stock details such as ticker, amount, price, and date.
+ *
+ * @component
+ * @param {Object} props - The component props
+ * @param {function} props.onClose - Function to close the modal after form submission
+ * @param {number} props.cashBalance - The current available cash balance in the portfolio
+ * @param {function} props.setIsAddFunds - Function to trigger an add-funds action
+ * @returns {JSX.Element} The rendered form component for adding or updating stock.
+ */
 const AddStockFormDashboard = ({ onClose, cashBalance, setIsAddFunds }) => {
   const {
     register,
@@ -34,17 +45,21 @@ const AddStockFormDashboard = ({ onClose, cashBalance, setIsAddFunds }) => {
     control,
     watch,
   } = useForm();
-  const { errors } = formState;
-  const { id: portfolioId } = useParams();
-  const { createStock, isCreating } = useCreateStock(portfolioId);
+  const { errors } = formState; // Extracts validation errors from the form state
+  const { id: portfolioId } = useParams(); // Retrieves the portfolio ID from the URL parameters
+  const { createStock, isCreating } = useCreateStock(portfolioId); // Custom hook to create a stock in the portfolio
+
+  // Local states for managing price fetching, form interactions, and date handling
   const [isFetchingPrice, setIsFetchingPrice] = useState(false);
   const [hasBlurred, setHasBlurred] = useState(false);
   const [isCustomDate, setIsCustomDate] = useState(true);
+
+  // Hook to get the last purchase date of a stock in the portfolio
   const { lastDate } = useLastPurchaseDate(portfolioId);
   const formattedLastDate = formatDateTimeLocal(lastDate);
-  const queryClient = useQueryClient();
 
-  console.log("isCreating: ", isCreating);
+  // Query client for invalidating and refetching data after stock creation
+  const queryClient = useQueryClient();
 
   // Watch input fields
   const amount = watch("amount");
@@ -52,13 +67,17 @@ const AddStockFormDashboard = ({ onClose, cashBalance, setIsAddFunds }) => {
   const ticker = watch("ticker");
   const selectedDate = watch("date");
 
+  // Effect to reset blur state when the ticker value changes
   useEffect(() => {
     if (hasBlurred) {
       setHasBlurred(false);
     }
   }, [ticker, hasBlurred]);
 
-  // Trigger function only when user finished selecting date input
+  /**
+   * Fetches the current price of the stock for the selected date after the ticker input loses focus.
+   * If the date is a weekend (Saturday/Sunday), it adjusts to fetch the price for the last Friday.
+   */
   const handleTickerBlurCurrentPrice = async () => {
     if (selectedDate && !hasBlurred) {
       setIsFetchingPrice(true);
@@ -80,26 +99,23 @@ const AddStockFormDashboard = ({ onClose, cashBalance, setIsAddFunds }) => {
     }
   };
 
+  // Calculates the total cost based on amount and price
   const totalCost =
     amount && price ? parseFloat(amount) * parseFloat(price) : 0;
   const isInsufficientFunds = cashBalance < totalCost;
 
+  /**
+   * Handles form submission to create a stock purchase entry.
+   * Formats the date appropriately for database storage and triggers the creation of the stock.
+   *
+   * @param {Object} data - The form data submitted by the user
+   */
   function onSubmit(data) {
-    // Remove!
-    const currentDateAndTimestamp = new Date()
-      .toISOString()
-      .slice(0, 23)
-      .replace("T", " ");
     let customData;
 
-    // if (!isCustomDate) {
-    //   console.log("im Here isCustomDate");
-    //   customData = { ...data, date: currentDateAndTimestamp };
-    // } else {
     const { date } = data;
     const formattedDate = formatDateTimeLocalToDB(date);
     customData = { ...data, date: formattedDate };
-    // }
 
     const dataToDB = { ...customData, portfolioId, actionId: "1" };
 
@@ -107,19 +123,20 @@ const AddStockFormDashboard = ({ onClose, cashBalance, setIsAddFunds }) => {
 
     createStock(dataToDB, {
       onSuccess: () => {
-        // Invalidate queries to refetch data
+        // Invalidate queries to refetch updated portfolio data
         queryClient.invalidateQueries(["stocks", portfolioId]);
         queryClient.invalidateQueries(["balance", portfolioId]);
         queryClient.invalidateQueries(["history-transactions", portfolioId]);
 
-        onClose();
+        onClose(); // Close the modal
 
-        reset();
+        reset(); // Reset the form
       },
     });
   }
 
-  if (isCreating) return <Spinner />;
+  // Show loading spinner while the stock is being created
+  if (isCreating) return <Spinner />; 
 
   return (
     <>
