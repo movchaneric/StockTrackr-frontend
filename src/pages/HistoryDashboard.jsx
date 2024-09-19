@@ -12,10 +12,28 @@ import Row from "../components/Row";
 
 import { useAllTransactions } from "../features/dashboard/hooks/useAllTransactions";
 
+<<<<<<< HEAD
 const HistoryDashboard = () => {
   const navigate = useNavigate();
   const { id: portfolioId } = useParams();
   const [searchParams] = useSearchParams();
+=======
+/**
+ * HistoryDashboard component for displaying the history of transactions
+ * associated with a portfolio. Provides filtering options to view specific
+ * types of transactions (e.g., bought, sold, cash actions).
+ *
+ *
+ * @component
+ * @returns {JSX.Element} The rendered transaction history dashboard.
+ */
+const HistoryDashboard = () => {
+  const navigate = useNavigate(); // Hook to navigate between routes
+  const { id: portfolioId } = useParams(); // Extracts the portfolio ID from the URL parameters
+  const [searchParams] = useSearchParams(); // Extracts search parameters from the URL for filtering transactions
+
+  // Fetches all transactions related to the given portfolio using custom hook
+>>>>>>> project-documentation
   const { allTransactions, isLoading: isFetchingAllTranscations } =
     useAllTransactions(portfolioId);
 
