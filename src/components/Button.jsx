@@ -1,0 +1,93 @@
+import styled, { css } from "styled-components";
+
+const sizes = {
+  small: css`
+    font-size: 1.3rem;
+    padding: 0.8rem 0.8rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    width: 8rem;
+  `,
+  medium: css`
+    font-size: 1.4rem;
+    padding: 1.2rem 1.6rem;
+    font-weight: 500;
+  `,
+  large: css`
+    font-size: 1.6rem;
+    padding: 1.2rem 2.4rem;
+    font-weight: 500;
+  `,
+  regular: css`
+    font-size: 0.8rem;
+    padding: 0.8rem 0;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+  `,
+};
+
+const variations = {
+  primary: css`
+    color: var(--color-brand-50);
+    background: var(--color-brand-600);
+
+    &:hover {
+      background-color: var(--color-brand-700);
+    }
+  `,
+  secondary: css`
+  color: var(--color-grey-600);
+    background: var(--color-grey-0);
+    border: 1px solid var(--color-grey-200);
+
+    &:hover {
+      background-color: var(--color-grey-50);
+    }
+  `,
+  danger: css`
+    color: var(--color-red-100);
+    background: var(--color-red-700);
+
+    &:hover {
+      background-color: var(--color-red-800);
+    }
+  `,
+
+  regular: css`
+    background-color: var(--color-grey-50);
+    color: var(--color-grey-600);
+
+    svg {
+      font-size: 2rem;
+    }
+
+    &:hover {
+      background-color: var(--color-grey-100);
+    }
+  `,
+};
+
+const Button = styled.button`
+  border: none;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+
+  ${(props) => variations[props.variation]}
+
+  ${(props) => sizes[props.size]}
+
+  &:disabled {
+    background-color: var(--color-brand-100);
+    color: white;
+    cursor: not-allowed;
+  }
+`;
+
+Button.defaultProps = {
+  variation: "primary",
+  size: "medium",
+};
+
+export default Button;
