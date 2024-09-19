@@ -13,18 +13,29 @@ import Modal from "../components/Modal";
 import CashForm from "../features/dashboard/CashForm";
 import { useDeletePorftolio } from "../features/portfolio-menu/hooks/useDeletePortoflio";
 
+/**
+ * Dashboard component for displaying portfolio details and providing actions
+ * such as depositing, withdrawing, and deleting a portfolio.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered dashboard component.
+ */
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const { portfolio, isLoading, error } = usePortfolio(id);
+  const navigate = useNavigate(); // Hook to navigate between routes
+  const { id } = useParams(); // Extracts the portfolio ID from the URL parameters
+  const { portfolio, isLoading, error } = usePortfolio(id); // Fetch portfolio details, loading status, and errors using custom hook
+  const { deletePortfolio, isDeleting } = useDeletePorftolio(); // Hook to handle portfolio deletion and track the deletion status
+
+  // State to control the visibility of the modal and track the action type
   const [isOpenModal, setIsOpenModal] = useState(false);
   let [actionType, setActionType] = useState("");
-  const { deletePortfolio, isDeleting } = useDeletePorftolio();
 
   if (isLoading) return <Spinner />;
   if (error) return <div>Error loading portfolio</div>;
   if (!portfolio) return <div>Portfolio not found</div>;
 
+  // Handle portfolio deletion
+  // @param {string} portfolioId - The ID of the portfolio to delete
   const handleDelete = (portfolioId) => {
     console.log(portfolioId);
     navigate("/");
@@ -36,6 +47,8 @@ const Dashboard = () => {
     console.log("portoflio-deleted");
   };
 
+  // Open the modal and set the type of action (Deposit/Withdraw)
+  // @param {string} type - The type of action to perform
   const openModal = (type) => {
     setActionType(type);
     setIsOpenModal(true);
@@ -95,6 +108,9 @@ const Dashboard = () => {
   );
 };
 
+/**
+ * Styled component for the button container, managing layout and spacing.
+ */
 const ButtonContainer = styled.div`
   display: flex;
   gap: 1.2rem;
