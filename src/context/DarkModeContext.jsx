@@ -4,10 +4,6 @@ import { createContext, useContext, useEffect, useState } from "react";
 const DarkModeContext = createContext();
 
 // Provider
-<<<<<<< HEAD
-function DarkModeProvider({ children }) {
-  // Read initial state from localStorage
-=======
 /**
  * DarkModeProvider component to wrap the application or parts of the application that need
  * access to dark mode functionality. It reads the initial mode from localStorage and allows
@@ -21,7 +17,6 @@ function DarkModeProvider({ children }) {
  */
 function DarkModeProvider({ children }) {
   // Read initial state from localStorage or default to "light-mode"
->>>>>>> project-documentation
   const initialMode = localStorage.getItem("isDarkMode") || "light-mode";
 
   const [isDarkMode, setIsDarkMode] = useState(initialMode);
