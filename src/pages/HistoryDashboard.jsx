@@ -12,10 +12,20 @@ import Row from "../components/Row";
 
 import { useAllTransactions } from "../features/dashboard/hooks/useAllTransactions";
 
+/**
+ * HistoryDashboard component for displaying the history of transactions
+ * associated with a portfolio. Provides filtering options to view specific
+ * types of transactions (e.g., bought, sold, cash actions).
+ *
+ * @component
+ * @returns {JSX.Element} The rendered transaction history dashboard.
+ */
 const HistoryDashboard = () => {
-  const navigate = useNavigate();
-  const { id: portfolioId } = useParams();
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate(); // Hook to navigate between routes
+  const { id: portfolioId } = useParams(); // Extracts the portfolio ID from the URL parameters
+  const [searchParams] = useSearchParams(); // Extracts search parameters from the URL for filtering transactions
+
+  // Fetches all transactions related to the given portfolio using custom hook
   const { allTransactions, isLoading: isFetchingAllTranscations } =
     useAllTransactions(portfolioId);
 
@@ -23,16 +33,19 @@ const HistoryDashboard = () => {
 
   console.log(allTransactions);
 
+  // Sorts the transactions in descending order based on date
   allTransactions.sort((a, b) => {
     const dateA = new Date(a.date);
     const dateB = new Date(b.date);
     return dateB - dateA; // For descending order
   });
 
+  // Retrieves the filter value from the search parameters or defaults to "all"
   const filterValue = searchParams.get("status") || "all";
 
   let filteredHistoryTransactions;
 
+  // Filters the transactions based on the selected filter option
   if (filterValue === "all") filteredHistoryTransactions = allTransactions;
   else if (filterValue === "bought-stock") {
     filteredHistoryTransactions = allTransactions.filter(
@@ -94,6 +107,10 @@ const HistoryDashboard = () => {
   );
 };
 
+/**
+ * Styled component for the main layout of the History Dashboard.
+ * Manages the structure and spacing.
+ */
 const StyledDashboard = styled.div`
   display: flex;
   flex-direction: column;
