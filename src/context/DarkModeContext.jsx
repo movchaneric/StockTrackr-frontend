@@ -9,8 +9,9 @@ const DarkModeContext = createContext();
 // Provider
 /**
  * DarkModeProvider component to wrap the application or parts of the application that need
- * access to dark mode functionality. It reads the initial mode from localStorage and allows 
+ * access to dark mode functionality. It reads the initial mode from localStorage and allows
  * toggling between dark and light modes.
+ *
  *
  * @component
  * @param {Object} props - Props passed to the provider
@@ -18,7 +19,6 @@ const DarkModeContext = createContext();
  * @returns {JSX.Element} The provider for the dark mode context.
  */
 function DarkModeProvider({ children }) {
-  
   // Read initial state from localStorage or default to "light-mode"
   const initialMode = localStorage.getItem("isDarkMode") || "light-mode";
 
