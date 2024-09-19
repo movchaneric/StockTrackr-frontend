@@ -11,13 +11,25 @@ import TableRow from "../../components/TableRow";
 import AddStockDashboard from "./AddStockDashboard";
 import Spinner from "../../components/Spinner";
 
+/**
+ * DashboardLayout component provides an overview of the portfolio, showing total balance, 
+ * cash balance, stock details, and graphical representations of portfolio performance. 
+ * It allows users to add or update stock information.
+ *
+ * @component
+ * @param {Object} props - The component props
+ * @param {string} props.id - The ID of the portfolio to display data for
+ * @returns {JSX.Element} The rendered dashboard layout component.
+ */
 const DashboardLayout = ({ id }) => {
-  const { balance: cashBalance } = useBalance(id);
-  const { filteredStocks, isLoading } = useStocks(id);
+  const { balance: cashBalance } = useBalance(id); // Custom hook to get the cash balance of the portfolio
+  const { filteredStocks, isLoading } = useStocks(id); // Custom hook to get the list of filtered stocks in the portfolio
 
+  // State to track the total value of stocks and the total portfolio balance (stocks + cash)
   const [totalStocksValue, setTotalStocksValue] = useState(0.0);
   const [totalPortfolioBalance, setTotalPortfolioBalance] = useState(0.0);
 
+  // Effect to calculate the total stock value and total portfolio balance whenever the stock data or cash balance changes
   useEffect(() => {
     if (filteredStocks) {
       const totalValue = filteredStocks?.reduce(
@@ -29,6 +41,7 @@ const DashboardLayout = ({ id }) => {
     }
   }, [filteredStocks, totalStocksValue, cashBalance]);
 
+  // Display loading spinner while the stock data is being fetched
   if (isLoading) {
     return <Spinner />;
   }
@@ -77,6 +90,10 @@ const DashboardLayout = ({ id }) => {
   );
 };
 
+/**
+ * Styled component for the layout of the dashboard, using CSS Grid to structure the sections
+ * including the balance information, graphs, stock table, and stock actions.
+ */
 const StyledDashboardLayout = styled.div`
   display: grid;
   grid-template-columns: 2fr 4fr 2fr;

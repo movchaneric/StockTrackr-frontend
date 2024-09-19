@@ -9,12 +9,29 @@ import { useNavigate } from "react-router-dom";
 import { useLogin } from "./hooks/useLogin";
 import SpinnerMini from "../../components/SpinnerMini";
 
+/**
+ * LoginForm component handles user login by capturing username and password input,
+ * and submitting the credentials through the `useLogin` hook.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered login form.
+ */
 const LoginForm = () => {
+   // State for storing the username and password input values
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
+  
+  // Custom hook for handling user login
   const { login, isLoading } = useLogin();
 
+  /**
+   * Handles form submission by preventing the default behavior, validating
+   * inputs, and triggering the login mutation. Resets input fields after login attempt.
+   *
+   * @param {Object} e - The form submission event
+   */
   function handleSubmit(e) {
     e.preventDefault();
 

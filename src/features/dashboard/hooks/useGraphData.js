@@ -1,6 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { getGraphData } from "../../../services/apiPortfolio";
 
+
+/**
+ * Custom hook to fetch and manage the graph data for a specific portfolio using React Query's `useQuery`.
+ * This hook handles data fetching, caching, and provides a refetch mechanism.
+ *
+ * @param {string} portfolioId - The ID of the portfolio to fetch graph data for
+ * @returns {Object} Contains the fetched graph data (`graphData`), loading state (`isLoading`), 
+ * and a refetch function to manually trigger a data refetch.
+ */
 export function useGraphData(portfolioId) {
   const {
     data: graphData,

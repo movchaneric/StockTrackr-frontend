@@ -1,6 +1,14 @@
 import axios from "axios";
 import { SERVER_IP_ADDRESS } from "../utils/constVariables";
+
 // ------------------- PORTFOLIO -----------------
+
+/**
+ * Fetches all portfolios from the server.
+ *
+ * @returns {Promise<Object>} A promise that resolves to the data of all portfolios.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getAllPortfolios() {
   try {
     const response = await axios.get(`http://${SERVER_IP_ADDRESS}/portfolio`);
@@ -12,6 +20,15 @@ export async function getAllPortfolios() {
   }
 }
 
+/**
+ * Adds a new portfolio to the server.
+ *
+ * @param {Object} portfolio - The portfolio data
+ * @param {string} portfolio.user_id - The user ID
+ * @param {string} portfolio.portfolio_name - The portfolio name
+ * @returns {Promise<Object>} A promise that resolves to the response of the add operation.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function addNewPortfolio(portfolio) {
   console.log("Add new portfolio: ", portfolio);
   const { user_id, portfolio_name } = portfolio;
@@ -31,6 +48,13 @@ export async function addNewPortfolio(portfolio) {
   }
 }
 
+/**
+ * Fetches a portfolio by its ID from the server.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the portfolio data.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getPortfolioById(portfolioId) {
   try {
     const response = await axios.post(
@@ -47,7 +71,13 @@ export async function getPortfolioById(portfolioId) {
   }
 }
 
-// Query to fetch cash balance
+/**
+ * Fetches the cash balance of a portfolio by its ID.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the cash balance.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getPorfolioBalance(portfolioId) {
   try {
     const response = await axios.get(
@@ -61,13 +91,23 @@ export async function getPorfolioBalance(portfolioId) {
   }
 }
 
-//TODO: Update cash balance
 // -------------- STOCKS --------------
+/**
+ * Performs an action (buy/sell) on a stock.
+ *
+ * @param {Object} data - The stock transaction data
+ * @param {string} data.portfolioId - The portfolio ID
+ * @param {string} data.actionId - The action type ("1" for buy, "2" for sell)
+ * @param {string} data.ticker - The stock ticker
+ * @param {number} data.price - The price of the stock
+ * @param {number} data.amount - The number of stocks
+ * @param {string} data.date - The transaction date
+ * @returns {Promise<void>} A promise that resolves if the action is successful.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function actionOnStock(data) {
   console.log("actionOnStock: ", data);
   const { portfolioId, actionId, ticker, price, amount, date } = data;
-
-  //Grab the value from action object and call it actionId
 
   try {
     await axios.post(`http://${SERVER_IP_ADDRESS}/stock-transactions/add`, {
@@ -91,6 +131,12 @@ export async function actionOnStock(data) {
   }
 }
 
+/**
+ * Fetches all stocks from the server.
+ *
+ * @returns {Promise<Object>} A promise that resolves to the data of all stocks.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getAllStocks() {
   try {
     const response = await axios.get(
@@ -104,6 +150,13 @@ export async function getAllStocks() {
   }
 }
 
+/**
+ * Fetches all stocks related to a specific portfolio.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the portfolio's stock data.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getAllStocksRelatedToPortfolio(portfolioId) {
   try {
     const response = await axios.get(
@@ -118,6 +171,13 @@ export async function getAllStocksRelatedToPortfolio(portfolioId) {
   }
 }
 
+/**
+ * Fetches the graph data related to a specific portfolio.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the graph data.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getGraphData(portoflioId) {
   try {
     const response = await axios.get(
@@ -131,6 +191,14 @@ export async function getGraphData(portoflioId) {
 }
 
 // -------------- STOCK TRANSACTIONS ----------------------
+
+/**
+ * Fetches all stock transactions for a specific portfolio.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the portfolio's stock transactions.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getAllStockTransactionsByPortfolioId(portfolioId) {
   try {
     const response = await axios.get(
@@ -146,6 +214,14 @@ export async function getAllStockTransactionsByPortfolioId(portfolioId) {
     throw err;
   }
 }
+
+/**
+ * Fetches all transactions (cash and stock) for a specific portfolio.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the portfolio's transactions.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getAllTransactionsByPortfolioId(portfolioId) {
   try {
     const response = await axios.get(
@@ -159,6 +235,13 @@ export async function getAllTransactionsByPortfolioId(portfolioId) {
   }
 }
 
+/**
+ * Fetches the date of the last transaction for a specific portfolio.
+ *
+ * @param {string} portfolioId - The portfolio ID
+ * @returns {Promise<Object>} A promise that resolves to the last transaction date.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function getLastTrasnsactionDate(portfolioId) {
   try {
     const response = await axios.get(
@@ -176,6 +259,18 @@ export async function getLastTrasnsactionDate(portfolioId) {
 }
 
 // -------------- CASH --------------
+
+/**
+ * Performs a cash action (deposit/withdraw) on a portfolio.
+ *
+ * @param {Object} payload - The cash transaction data
+ * @param {string} payload.portfolioId - The portfolio ID
+ * @param {string} payload.actionId - The action type ("1" for deposit, "2" for withdraw)
+ * @param {number} payload.sum - The amount of cash
+ * @param {string} payload.parsedDate - The transaction date
+ * @returns {Promise<void>} A promise that resolves if the cash action is successful.
+ * @throws Will throw an error if the API call fails.
+ */
 export async function cashAction({ portfolioId, actionId, sum, parsedDate }) {
   try {
     await axios.post(
@@ -193,8 +288,15 @@ export async function cashAction({ portfolioId, actionId, sum, parsedDate }) {
   }
 }
 
-// -------------- Delete all actions from the transactionId providede and forward --------------
-export async function deleteAllActionsFromNowOn(transactionsId) {
+// -------------- Delete all actions from the transactionId provided and forward --------------
+
+/**
+ * Deletes all actions from a specific transaction ID onward.
+ *
+ * @param {string} transactionsId - The transaction ID
+ * @returns {Promise<void>} A promise that resolves if the deletion is successful.
+ * @throws Will throw an error if the API call fails.
+ */ export async function deleteAllActionsFromNowOn(transactionsId) {
   try {
     await axios.post(
       `http://${SERVER_IP_ADDRESS}/cash-transactions/delete_actions/${transactionsId}`

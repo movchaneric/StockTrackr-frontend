@@ -23,28 +23,47 @@ import { useLastPurchaseDate } from "../hooks/useLastPurhchaseDate";
 import { formatISOToDate } from "../../../utils/helpers";
 import { SERVER_IP_ADDRESS } from "../../../utils/constVariables";
 
+/**
+ * SellStockForm component allows users to sell a stock by submitting a form with stock details
+ * such as the ticker, price, amount, and date. It validates inputs and handles API interactions.
+ *
+ * @component
+ * @param {Object} props - The component props
+ * @param {string} props.ticker - The stock ticker symbol
+ * @param {number} props.currentPrice - The current price of the stock
+ * @param {number} props.maxAmount - The maximum amount of stock available to sell
+ * @param {function} props.onClose - Function to close the form after a successful submission
+ * @returns {JSX.Element} The rendered form component for selling stocks.
+ */
 const SellStockForm = ({ ticker, currentPrice, maxAmount, onClose }) => {
-  // UseState
+  // States for handling date customization, input blur events, and price fetching
   const [isCustomDate, setIsCustomDate] = useState(true);
   const [hasBlurred, setHasBlurred] = useState(false);
   const [isFetchingPrice, setIsFetchingPrice] = useState(false);
+
   // Custom hooks
   const { id: portfolioId } = useParams();
   const { lastDate } = useLastPurchaseDate(portfolioId);
   const formattedLastDate = formatDateTimeLocal(lastDate);
   const { sellStock, isSelling } = useSellStock();
-  // Imported hooks
+
+  // QueryClient instance to manage and manipulate query cache
   const queryClient = useQueryClient();
+
+  // React Hook Form setup for form handling, validation, and state management
   const { register, handleSubmit, formState, reset, setValue, watch } = useForm(
     {
       mode: "onChange",
     }
   );
+
+  // Extract errors from the form state
   const { errors } = formState;
 
+  // Watch for changes in the date input
   const selectedDate = watch("date");
-  console.log("selectedDate: ", formatISOToDate(selectedDate));
 
+  // Pre-fill the form values with the ticker and current price on component mount
   useEffect(() => {
     if (currentPrice && ticker) {
       setValue("price", currentPrice);
@@ -52,18 +71,21 @@ const SellStockForm = ({ ticker, currentPrice, maxAmount, onClose }) => {
     }
   }, [currentPrice, ticker, setValue]);
 
+  // Reset blur state when the ticker value changes
   useEffect(() => {
     if (hasBlurred) {
       setHasBlurred(false);
     }
   }, [ticker, hasBlurred]);
 
-  // Trigger function only when user finished selecting date input
+  /**
+   * Fetches the current stock price when the user finishes selecting a date input.
+   * Adjusts for weekends by fetching the last available stock market date.
+   */
   const handleTickerBlurCurrentPrice = async () => {
     if (selectedDate && !hasBlurred) {
       setIsFetchingPrice(true);
       try {
-        // TODO: get the current date if satureday or sunday get last friday
         const response = await axios.get(
           `http://${SERVER_IP_ADDRESS}/stock/last_price?ticker=${ticker}&date=${formatISOToDate(selectedDate)}`
         );
@@ -80,7 +102,12 @@ const SellStockForm = ({ ticker, currentPrice, maxAmount, onClose }) => {
     }
   };
 
-  //SELL FORM SUBMIT
+  /**
+   * Handles form submission to execute the stock sell action.
+   * Formats the date appropriately and triggers the sell stock API call.
+   *
+   * @param {Object} data - The form data submitted by the user
+   */
   function onSubmit(data) {
     const { price } = data;
     let customData;
@@ -100,8 +127,6 @@ const SellStockForm = ({ ticker, currentPrice, maxAmount, onClose }) => {
       actionId: "2",
       price,
     };
-
-    console.log(formData);
 
     sellStock(formData, {
       onSuccess: () => {
